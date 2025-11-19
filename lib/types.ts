@@ -40,8 +40,28 @@ export interface HeroSectionData {
 
 }
 
+
+//second section
+
+// 1. Definimos la Tarjeta Individual
+export interface HighlightCard {
+  id: number;
+  title: string;
+  description: string;
+  image: StrapiMedia;
+  hasGradient: boolean;
+ 
+}
+
+// 2. Definimos la Sección Completa
+export interface HighlightsSectionData {
+  id: number;
+  __component: "layout.highlights-section";
+  cards: HighlightCard[];
+}
+
 // La Home Page tiene un array de secciones
-export type PageSection = HeroSectionData; 
+export type PageSection = HeroSectionData | HighlightsSectionData; 
 
 export interface HomePage {
   id: number;

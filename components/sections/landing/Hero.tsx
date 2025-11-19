@@ -15,7 +15,7 @@ export function Hero({ data }: HeroProps) {
   if (!hero_titulo) return null;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pt-20 md:pt-0 md:pl-32 lg:pl-40"> {/* Padding top en movil para navbar, padding left en desktop para sidebar */}
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pt-16 md:pt-0 md:pl-24 lg:pl-24"> {/* Padding top en movil para navbar, padding left en desktop para sidebar */}
       
       {/* ========== FONDO GLOBAL (Tu diseño intacto) ========== */}
       <div className="absolute inset-0 z-0">
@@ -44,7 +44,7 @@ export function Hero({ data }: HeroProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             // Responsive text sizes: text-5xl en móvil, text-8xl en desktop
-            className="text-5xl sm:text-6xl lg:text-8xl text-white leading-none tracking-wide uppercase mb-6 drop-shadow-xl"
+            className="text-4xl  sm:text-5xl lg:text-7xl font-bold text-white leading-none tracking-wide uppercase mb-6 drop-shadow-xl"
             style={{fontFamily: "var(--titan-one-regular)",}}
           >
             {hero_titulo}
@@ -55,7 +55,7 @@ export function Hero({ data }: HeroProps) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg sm:text-xl lg:text-2xl text-gray-300 font-medium mb-8 lg:mb-10 max-w-xl mx-auto lg:mx-0"
+            className="text-sm sm:text-lg lg:text-xl text-gray-300 font-medium mb-8 lg:mb-10 max-w-xl mx-auto lg:mx-0"
           >
             {hero_subtitulo}
           </motion.p>

@@ -42,7 +42,19 @@ export async function getHomePageData(): Promise<HomePage> {
               hero_background: true,
               link: true
             }
-          }
+          },
+
+          'layout.highlights-section': {
+            populate: {
+              cards: {
+                populate: {
+                  image: true // Traemos la imagen de cada tarjeta
+                }
+              }
+            }
+          },
+
+          
         }
       }
     },
