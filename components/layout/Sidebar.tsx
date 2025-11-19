@@ -193,7 +193,7 @@ export default function Sidebar({ logoUrl }: SidebarProps) {
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
-          className="fixed top-4 md:top-6 right-4 md:right-6 z-50 flex items-center gap-3 md:gap-4"
+          className="fixed top-4 mt-4 md:top-6 right-4 md:right-12 z-50 flex items-center gap-3 md:gap-4"
         >
           <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl">
             <span className="hidden lg:inline">Iniciar sesión</span>

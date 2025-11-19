@@ -15,9 +15,9 @@ export function Hero({ data }: HeroProps) {
   if (!hero_titulo) return null;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pt-16 md:pt-0 md:pl-24 lg:pl-24"> {/* Padding top en movil para navbar, padding left en desktop para sidebar */}
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pt-16 md:pt-0 md:pl-48 lg:pl-48"> {/* Padding left igual que los otros componentes */}
       
-      {/* ========== FONDO GLOBAL (Tu diseño intacto) ========== */}
+      {/* ========== FONDO GLOBAL ========== */}
       <div className="absolute inset-0 z-0">
          {hero_background && (
            <Image 
@@ -33,6 +33,7 @@ export function Hero({ data }: HeroProps) {
       </div>
 
       {/* ========== CONTENIDO ========== */}
+      {/* CAMBIO: Agregar container mx-auto para mismo ancho que Banner y Highlights */}
       <div className="relative z-10 container mx-auto min-h-screen flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-8 px-4 md:px-8 py-12 lg:py-0">
         
         {/* IZQUIERDA: TEXTO */}
@@ -43,8 +44,7 @@ export function Hero({ data }: HeroProps) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            // Responsive text sizes: text-5xl en móvil, text-8xl en desktop
-            className="text-4xl  sm:text-5xl lg:text-7xl font-bold text-white leading-none tracking-wide uppercase mb-6 drop-shadow-xl"
+            className="text-4xl sm:text-5xl lg:text-7xl font-bold text-white leading-none tracking-wide uppercase mb-6 drop-shadow-xl"
             style={{fontFamily: "var(--titan-one-regular)",}}
           >
             {hero_titulo}
@@ -55,7 +55,7 @@ export function Hero({ data }: HeroProps) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-sm sm:text-lg lg:text-xl text-gray-300 font-medium mb-8 lg:mb-10 max-w-xl mx-auto lg:mx-0"
+            className="text-sm sm:text-lg lg:text-xl text-gray-300 font-jost mb-8 lg:mb-10 max-w-xl mx-auto lg:mx-0"
           >
             {hero_subtitulo}
           </motion.p>
