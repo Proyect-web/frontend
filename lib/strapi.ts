@@ -54,6 +54,14 @@ export async function getHomePageData(): Promise<HomePage> {
             }
           },
 
+          // --- NUEVA SECCIÓN BANNER ---
+          'layout.banner-section': {
+            populate: {
+              banner_image: true,
+              link: true
+            }
+          }
+
           
         }
       }

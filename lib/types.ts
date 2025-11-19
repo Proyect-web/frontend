@@ -60,8 +60,19 @@ export interface HighlightsSectionData {
   cards: HighlightCard[];
 }
 
+//section 
+
+export interface BannerSectionData {
+  id: number;
+  __component: "layout.banner-section";
+  banner_title: string;
+  banner_subtitle: string;
+  banner_image: StrapiMedia;
+  link: LinkComponent;
+}
+
 // La Home Page tiene un array de secciones
-export type PageSection = HeroSectionData | HighlightsSectionData; 
+export type PageSection = HeroSectionData | HighlightsSectionData | BannerSectionData;
 
 export interface HomePage {
   id: number;

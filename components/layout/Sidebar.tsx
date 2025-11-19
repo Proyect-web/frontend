@@ -280,7 +280,7 @@ export default function Sidebar({ logoUrl }: SidebarProps) {
                   className={`
                     relative flex items-center h-11 md:h-12 lg:h-13 px-2.5 md:px-3 lg:px-3.5 rounded-[1.25rem] md:rounded-[1.5rem] transition-all duration-300 group
                     ${item.active 
-                      ? "bg-[#0097B2] text-black font-bold shadow-[0_0_18px_rgba(0,151,178,0.5)]" 
+                      ? "bg-button text-black font-bold shadow-[0_0_18px_rgba(0,151,178,0.5)]" 
                       : "text-gray-100 hover:text-white hover:bg-white/8"
                     }
                   `}

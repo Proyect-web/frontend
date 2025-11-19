@@ -7,8 +7,10 @@ import { PageSection } from "@/lib/types";
 
 // Importamos el componente Hero actualizado
 import { Hero } from "@/components/sections/landing/Hero"; 
+import { Highlights } from "@/components/sections/landing/Highlights"; 
+import { Banner } from "@/components/sections/landing/Banner"; // <--- IMPORTAR
 
-import { Highlights } from "@/components/sections/landing/Highlights"; // Importar nuevo componente
+
 // Función para generar metadatos SEO dinámicos
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -34,6 +36,9 @@ function SectionRenderer(section: PageSection, index: number) {
     case "layout.highlights-section":
       return <Highlights key={index} data={section} />;
 
+    // --- NUEVO CASO ---
+    case "layout.banner-section":
+      return <Banner key={index} data={section} />;
 
     default:
       return null;
