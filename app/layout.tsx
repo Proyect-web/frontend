@@ -1,42 +1,56 @@
-// src/app/layout.tsx
+// /app/layout.tsx
 
 import type { Metadata } from "next";
-// 1. IMPORTAR 'Manrope' JUNTO CON 'Inter'
-import { Inter, Manrope } from "next/font/google";
+import { Inter, Poppins, Titan_One, Rubik } from "next/font/google";
 import "./globals.css";
 
-import Navbar from "@/components/layout/Navbar";
+import Sidebar from "@/components/layout/Sidebar"; // Importamos el nuevo componente
+// 1. Importar la función de fetch
+import { getHomePageData } from "@/lib/strapi";
 
-// 2. CONFIGURAR AMBAS FUENTES
-// 'Inter' será la fuente del cuerpo (sans)
 const inter = Inter({ 
   subsets: ["latin"],
-  variable: "--font-inter", // Asignamos una variable CSS
+  variable: "--font-inter",
 });
 
-// 'Manrope' será la fuente de títulos (display)
-const manrope = Manrope({
+const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "700", "800"], // Pesos que usaremos
-  variable: "--font-manrope", // Asignamos una variable CSS
+  weight: ["400", "500", "700", "800"], 
+  variable: "--font-poppins",
 });
+
+const titan = Rubik({
+
+  weight: ["900"], 
+  variable: "--titan-one-regular",
+})
 
 export const metadata: Metadata = {
   title: "h2go - Innovación en Hidratación",
   description: "Descubre la innovadora botella de agua.",
 };
-
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  
+  let logoUrl = null;
+  try {
+    const homeData = await getHomePageData();
+    if (homeData && homeData.navbar_logo) {
+      logoUrl = homeData.navbar_logo.url;
+    }
+  } catch (error) {
+    console.error("Error cargando el logo:", error);
+  }
+
   return (
     <html lang="es" className="scroll-smooth">
-      {/* 3. APLICAR AMBAS VARIABLES DE FUENTE AL BODY */}
-      <body className={`${inter.variable} ${manrope.variable} bg-gray-900 font-sans`}>
-        {/* 'font-sans' aplica Inter por defecto a todo */}
-        <Navbar />
+      <body className={`${inter.variable} ${poppins.variable} ${titan.variable} bg-gray-900  text-white antialiased`}>
+       
+       
+        <Sidebar logoUrl={logoUrl} />
         <main>{children}</main>
       </body>
     </html>

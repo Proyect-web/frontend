@@ -1,142 +1,123 @@
 // src/components/sections/landing/Hero.tsx
-
 "use client";
-
-
 import Image from "next/image";
-import { motion, Variants } from "framer-motion";
-import { StrapiMedia } from "@/lib/types";
-import { ArrowDown } from "lucide-react";
+import Link from "next/link";
+import { motion } from "framer-motion";
+import { HeroSectionData } from "@/lib/types";
+import { ArrowRight } from "lucide-react";
 
 interface HeroProps {
-  title: string;
-  subtitle: string;
-  image: StrapiMedia;
+  data: HeroSectionData;
 }
 
-// Variantes de animación (sin cambios, ya que te gustaron)
-const textContainerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
-  },
-};
+export function Hero({ data }: HeroProps) {
+  const { hero_titulo, hero_subtitulo, hero_imagen, hero_background, link } = data;
 
-const wordVariants: Variants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      damping: 12,
-      stiffness: 100,
-    },
-  },
-};
-
-export default function Hero({ title, subtitle, image }: HeroProps) {
-  const titleWords = title.split(" ");
+  // Protección
+  if (!hero_titulo) return null;
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pl-20 md:pl-24"> {/* Padding left para el sidebar */}
       
-      {/* Efecto Ken Burns (sin cambios) */}
-      <motion.div
-        className="absolute inset-0 z-[-10]"
-        initial={{ scale: 1.1, opacity: 0.8 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-      >
-        <Image
-          src={image.url}
-          alt={image.alternativeText || "Fondo del Hero"}
-          fill
-          style={{ objectFit: "cover" }}
-          priority
-        />
-      </motion.div>
-
-      {/* Superposición (Overlay) (sin cambios) */}
-      <div className="absolute inset-0 bg-black/40 z-[-5]"></div>
-
-      {/* --- INICIO DE LA MEJORA DE DISEÑO --- */}
-
-      {/* 1. Contenido de Texto:
-        - CAMBIADO A 'justify-end' y 'items-start' (Abajo a la izquierda)
-        - CAMBIADO A 'text-left' (Alineado a la izquierda)
-        - AÑADIDO PADDING: 'p-8 md:p-12 lg:p-24'
-      */}
-      <div className="relative z-10 h-full flex flex-col items-start justify-end text-left text-white p-8 md:p-12 lg:p-24">
-        
-
-
-        {/* 2. Contenedor de Título Animado */} 
-        <motion.h1
-          // 3. FUENTE CAMBIADA A 'font-display' (Manrope) 
-          // 4. TAMAÑO REDUCIDO: 'text-4xl md:text-6xl lg:text-7xl'
-          className="font-display text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight w-[75%] leading-tight"
-          variants={textContainerVariants}
-          initial="hidden"
-          animate="visible"
-          // 5. 'justify-start' para alinear las palabras a la izquierda
-          style={{ display: "flex", flexWrap: "wrap", justifyContent: "flex-start" }}
-        >
-          {titleWords.map((word, index) => (
-            <motion.span
-              key={index}
-              variants={wordVariants}
-              className="inline-block mr-4 md:mr-6" // Espacio entre palabras
-            >
-              {word}
-            </motion.span>
-          ))}
-        </motion.h1>
-
-
-
-
-        {/* 9. Subtítulo (Animado) */}
-        <motion.p
-          // 6. TAMAÑO Y ANCHURA AJUSTADOS
-          className="mt-4 text-base md:text-lg max-w-3xl text-gray-200"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{
-            duration: 0.8,
-            ease: "easeOut",
-            delay: (titleWords.length * 0.1) + 0.5, 
-          }}
-        >
-          {subtitle}
-        </motion.p>
+      {/* ========== FONDO GLOBAL ========== */}
+      <div className="absolute inset-0 z-0">
+         {/* Imagen de fondo desde Strapi */}
+         {hero_background && (
+           <Image 
+             src={hero_background.url}
+             alt="Fondo"
+             fill
+             className="object-cover opacity-70"
+             priority
+           />
+         )}
+         {/* Gradiente de oscurecimiento para legibilidad */}
+         <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/60 to-transparent" />
+         <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black" />
       </div>
 
-      {/* 10. INDICADOR DE SCROLL (REUBICADO) */}
-      {/* 7. CAMBIADO A 'right-10' para balancear el diseño */}
-      <motion.div
-        className="absolute bottom-10 right-10" 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{
-            repeat: Infinity,
-            duration: 1.5,
-            ease: "easeInOut",
-          }}
-        >
-          <ArrowDown size={24} className="text-white" />
-        </motion.div>
-      </motion.div>
+      {/* ========== CONTENIDO ========== */}
+      <div className="relative z-10 container mx-auto h-screen flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-10 px-6 md:px-12 pt-20">
+        
+        {/* IZQUIERDA: TEXTO */}
+        <div className="flex-1 max-w-2xl flex flex-col items-start text-left">
+          
+          {/* Título Impactante */}
+          <motion.h1 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className=" text-5xl md:text-7xl lg:text-8xl text-white leading-none tracking-wide uppercase mb-6"
+            style={{fontFamily: "var(--titan-one-regular)",}}
+          >
+            {hero_titulo}
+          </motion.h1>
 
-      {/* --- FIN DE LA MEJORA DE DISEÑO --- */}
+          {/* Subtítulo */}
+          <motion.p 
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-xl md:text-2xl text-gray-300 font-medium mb-10 max-w-2xl"
+           
+          >
+            {hero_subtitulo}
+          </motion.p>
+
+          {/* Botón CTA Estilo Referencia */}
+          {link && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
+              <Link 
+                href={link.href}
+                className="group relative inline-flex items-center justify-center px-8 py-4 md:px-10 md:py-5 bg-linear-to-r from-blue-500  to-sky-300 text-gray-900 text-xl font-bold uppercase tracking-wide rounded-2xl overflow-hidden  hover:shadow-blue-950 "
+              >
+                <span className="relative z-10 flex items-center gap-3">
+                  {link.label}
+                 
+                </span>
+                {/* Efecto brillo hover */}
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+              </Link>
+          
+            </motion.div>
+          )}
+        </div>
+
+        {/* DERECHA: IMAGEN PRODUCTO */}
+        <div className="flex-1 w-full h-full relative flex items-center justify-center lg:justify-end">
+           <motion.div
+             initial={{ opacity: 0, x: 50, rotate: 5 }}
+             animate={{ opacity: 1, x: 0, rotate: 0 }}
+             transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+             className="relative w-full max-w-[800px] aspect-square"
+           >
+             {/* Efectos traseros */}
+             <div className="absolute inset-0 bg-linear-to-tr from-blue-800/20 to-blue-500/20 rounded-full blur-[80px] animate-pulse" />
+             
+             {/* Imagen Principal */}
+             <Image
+               src={hero_imagen.url}
+               alt="Hero Product"
+               fill
+               className="object-contain drop-shadow-2xl z-10"
+               priority
+             />
+             
+             {/* Elementos flotantes decorativos (opcional, si quieres simular la referencia) */}
+             <motion.div 
+               animate={{ y: [0, -20, 0] }} 
+               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+               className="absolute -top-10 -right-10 w-20 h-20 bg-blue-500 rounded-xl blur-xl opacity-40" 
+             />
+             
+           </motion.div>
+        </div>
+
+      </div>
     </section>
   );
 }

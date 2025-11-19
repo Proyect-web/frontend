@@ -1,55 +1,71 @@
-// src/app/page.tsx
+// app/page.tsx
 
 import React from "react";
-// 1. Importar la nueva función de fetch y el componente Hero
+import { Metadata } from "next";
 import { getHomePageData } from "@/lib/strapi";
-import Hero from "@/components/sections/landing/Hero";
+import { PageSection } from "@/lib/types";
 
-/*
- * La página de inicio ahora es un Server Component 'async'.
- * Obtiene los datos de la 'Página de Inicio' desde Strapi.
- */
-export default async function Home() {
-  
-  let homeData;
+// Importamos el componente Hero actualizado
+import { Hero } from "@/components/sections/landing/Hero"; 
+
+// Función para generar metadatos SEO dinámicos
+export async function generateMetadata(): Promise<Metadata> {
   try {
+    const homeData = await getHomePageData();
+    return {
+      title: homeData?.title || "GOH2",
+      description: homeData?.description || "La mejor hidratación para ti.",
+    };
+  } catch (e) {
+    return { title: "Goh2", description: "Error de conexión" };
+  }
+}
+
+// Función que decide qué componente renderizar según el nombre en Strapi
+function SectionRenderer(section: PageSection, index: number) {
+  switch (section.__component) {
+    case "layout.hero-section":
+      // Pasamos toda la sección como 'data' al componente Hero
+      return <Hero key={index} data={section} />;
+    
+    // Aquí agregarás más casos en el futuro (ej: case "layout.features": ...)
+    
+    default:
+      return null;
+  }
+}
+
+export default async function Home() {
+  let homeData;
+
+  try {
+    // Obtenemos los datos desde Strapi (Backend en Aiven)
     homeData = await getHomePageData();
   } catch (error) {
-    console.error("Error al obtener datos de la Homepage:", error);
-    // Renderizado de fallback en caso de error
+    console.error("Error en Home:", error);
     return (
-      <div className="h-screen flex items-center justify-center text-red-500">
-        Error al cargar el contenido. Revisa la conexión con Strapi.
-      </div>
-    );
-  }
-  
-  // Verificamos que los datos necesarios existen
-  if (!homeData || !homeData.hero_imagen) {
-     return (
-      <div className="h-screen flex items-center justify-center text-yellow-500">
-        Contenido de la Página de Inicio no encontrado.
-        ¿Publicaste la 'Página de Inicio' en Strapi?
+      <div className="flex h-screen items-center justify-center bg-black text-white">
+        <p>Error conectando con el servidor. Revisa tu terminal.</p>
       </div>
     );
   }
 
+  // Validación: Si no hay datos o la zona dinámica está vacía
+  if (!homeData || !homeData.sections || homeData.sections.length === 0) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-black text-gray-400">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-white mb-2">Contenido no encontrado</h1>
+          <p>En procesos de cambiosss.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Renderizado: Mapeamos las secciones dinámicamente
   return (
-    <>
-      {/* Sección 1: Hero */}
-      {/* Pasamos los datos dinámicos como props */}
-      <Hero
-        title={homeData.hero_titulo}
-        subtitle={homeData.hero_subtitulo}
-        image={homeData.hero_imagen}
-      />
-
-      {/* Aquí puedes añadir el resto de secciones:
-      <Features />
-      <Specifications />
-      <Gallery />
-      ... 
-      */}
-    </>
+    <main className="bg-[#0a0a0a] min-h-screen">
+      {homeData.sections.map((section, index) => SectionRenderer(section, index))}
+    </main>
   );
 }

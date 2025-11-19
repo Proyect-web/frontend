@@ -1,33 +1,14 @@
-// src/lib/types.ts
+// /lib/types.ts
 
-// Interfaz para un Post (estructura plana de Strapi v5)
-export interface Post {
-  id: number;
-  title: string;
-  slug: string;
-  content: any; // El 'any' es para el JSON de Blocks
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  // Añadiremos más campos aquí luego (ej: image)
-}
-
-// Interfaz para la respuesta genérica de la API de Strapi
-export interface StrapiResponse<T> {
-  data: T[];
-  meta: {
-    pagination: {
-      page: number;
-      pageSize: number;
-      pageCount: number;
-      total: number;
-    };
-  };
+export interface StrapiMediaFormat {
+  url: string;
+  width: number;
+  height: number;
 }
 
 export interface StrapiMedia {
   id: number;
-  url: string;        // La URL de Cloudinary
+  url: string;
   alternativeText: string | null;
   caption: string | null;
   width: number;
@@ -40,17 +21,34 @@ export interface StrapiMedia {
   };
 }
 
-interface StrapiMediaFormat {
-  url: string;
-  width: number;
-  height: number;
+export interface LinkComponent {
+  id: number;
+  href: string;
+  label: string;
+  isExternal: boolean;
 }
 
+// Definimos el componente Hero tal como viene en la sección
+export interface HeroSectionData {
+  id: number;
+  __component: "layout.hero-section";
+  hero_titulo: string;
+  hero_subtitulo: string;
+  hero_imagen: StrapiMedia;
+  hero_background: StrapiMedia;
+  link: LinkComponent;
+
+}
+
+// La Home Page tiene un array de secciones
+export type PageSection = HeroSectionData; 
 
 export interface HomePage {
   id: number;
-  hero_titulo: string;
-  hero_subtitulo: string;
-  hero_imagen: StrapiMedia; // Usamos la interfaz de Media
-  // mas campos,
+  title: string;
+  description: string;
+  // Usamos el tipo Unión aquí
+  sections: PageSection[]; 
+
+  navbar_logo: StrapiMedia;
 }
