@@ -1,10 +1,8 @@
-// src/components/sections/landing/Hero.tsx
 "use client";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { HeroSectionData } from "@/lib/types";
-import { ArrowRight } from "lucide-react";
 
 interface HeroProps {
   data: HeroSectionData;
@@ -13,107 +11,119 @@ interface HeroProps {
 export function Hero({ data }: HeroProps) {
   const { hero_titulo, hero_subtitulo, hero_imagen, hero_background, link } = data;
 
-  // Protección
   if (!hero_titulo) return null;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pl-20 md:pl-24"> {/* Padding left para el sidebar */}
+    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] px-4 md:pl-28 md:pr-8 pt-24 md:pt-0 flex items-center"> 
       
-      {/* ========== FONDO GLOBAL ========== */}
+      {/* ========== FONDO (Sin cambios) ========== */}
       <div className="absolute inset-0 z-0">
-         {/* Imagen de fondo desde Strapi */}
          {hero_background && (
            <Image 
              src={hero_background.url}
              alt="Fondo"
              fill
-             className="object-cover opacity-70"
+             className="object-cover opacity-60"
              priority
            />
          )}
-         {/* Gradiente de oscurecimiento para legibilidad */}
-         <div className="absolute inset-0 bg-linear-to-r from-black/90 via-black/60 to-transparent" />
-         <div className="absolute inset-0 bg-linear-to-b from-transparent via-transparent to-black" />
+         <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/40" />
+         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
       </div>
 
       {/* ========== CONTENIDO ========== */}
-      <div className="relative z-10 container mx-auto h-screen flex flex-col lg:flex-row items-center justify-center lg:justify-between gap-10 px-6 md:px-12 pt-20">
+      <div className="relative z-10 container mx-auto flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-4">
         
-        {/* IZQUIERDA: TEXTO */}
-        <div className="flex-1 max-w-2xl flex flex-col items-start text-left">
+        {/* IZQUIERDA: TEXTO + IMAGEN MÓVIL + BOTÓN */}
+        <div className="flex-1 w-full max-w-2xl flex flex-col items-center lg:items-start text-center lg:text-left">
           
-          {/* Título Impactante */}
+          {/* 1. Título */}
           <motion.h1 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className=" text-5xl md:text-7xl lg:text-8xl text-white leading-none tracking-wide uppercase mb-6"
+            className="font-black text-5xl sm:text-6xl lg:text-8xl text-white leading-[0.9] tracking-wide uppercase mb-6 drop-shadow-xl"
             style={{fontFamily: "var(--titan-one-regular)",}}
           >
             {hero_titulo}
           </motion.h1>
 
-          {/* Subtítulo */}
+          {/* 2. Subtítulo */}
           <motion.p 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-xl md:text-2xl text-gray-300 font-medium mb-10 max-w-2xl"
-           
+            className="text-lg sm:text-xl lg:text-2xl text-gray-300 font-medium mb-8 lg:mb-10 max-w-xl mx-auto lg:mx-0"
           >
             {hero_subtitulo}
           </motion.p>
 
-          {/* Botón CTA Estilo Referencia */}
+          {/* 3. IMAGEN (VERSIÓN MÓVIL - SOLO VISIBLE EN MÓVIL) */}
+          {/* lg:hidden oculta esto en pantallas grandes */}
+          <motion.div
+             initial={{ opacity: 0, scale: 0.8 }}
+             animate={{ opacity: 1, scale: 1 }}
+             transition={{ duration: 0.8, delay: 0.3 }}
+             className="block lg:hidden relative w-full max-w-[280px] aspect-square mb-8"
+           >
+             <div className="absolute inset-0 bg-gradient-to-tr from-blue-800/30 to-blue-500/30 rounded-full blur-[50px] animate-pulse" />
+             <Image
+                  src={hero_imagen.url}
+                  alt="Hero Product Mobile"
+                  fill
+                  className="object-contain drop-shadow-2xl z-10"
+                  priority
+             />
+          </motion.div>
+
+          {/* 4. Botón CTA */}
           {link && (
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.4 }}
+              className="w-full lg:w-auto"
             >
               <Link 
                 href={link.href}
-                className="group relative inline-flex items-center justify-center px-8 py-4 md:px-10 md:py-5 bg-linear-to-r from-blue-500  to-sky-300 text-gray-900 text-xl font-bold uppercase tracking-wide rounded-2xl overflow-hidden  hover:shadow-blue-950 "
+                className="group relative inline-flex items-center justify-center w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-blue-500 to-sky-400 text-gray-900 text-xl font-bold uppercase tracking-wide rounded-2xl overflow-hidden hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300"
               >
                 <span className="relative z-10 flex items-center gap-3">
                   {link.label}
-                 
                 </span>
-                {/* Efecto brillo hover */}
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               </Link>
-          
             </motion.div>
           )}
         </div>
 
-        {/* DERECHA: IMAGEN PRODUCTO */}
-        <div className="flex-1 w-full h-full relative flex items-center justify-center lg:justify-end">
+        {/* DERECHA: IMAGEN PRODUCTO (VERSIÓN ESCRITORIO - SOLO VISIBLE EN PC) */}
+        {/* hidden lg:flex oculta esto en móviles */}
+        <div className="hidden lg:flex flex-1 w-full items-center justify-center lg:justify-end mt-4 lg:mt-0">
            <motion.div
-             initial={{ opacity: 0, x: 50, rotate: 5 }}
-             animate={{ opacity: 1, x: 0, rotate: 0 }}
+             initial={{ opacity: 0, y: 20 }}
+             animate={{ opacity: 1, y: 0 }}
              transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
-             className="relative w-full max-w-[800px] aspect-square"
+             className="relative w-full max-w-[800px] aspect-square lg:aspect-auto h-auto lg:h-[80vh]"
            >
-             {/* Efectos traseros */}
-             <div className="absolute inset-0 bg-linear-to-tr from-blue-800/20 to-blue-500/20 rounded-full blur-[80px] animate-pulse" />
+             <div className="absolute inset-0 bg-linear-to-tr from-blue-800/30 to-blue-500/30 rounded-full blur-[60px] animate-pulse" />
              
-             {/* Imagen Principal */}
-             <Image
-               src={hero_imagen.url}
-               alt="Hero Product"
-               fill
-               className="object-contain drop-shadow-2xl z-10"
-               priority
-             />
+             <div className="relative w-full h-full">
+                <Image
+                  src={hero_imagen.url}
+                  alt="Hero Product Desktop"
+                  fill
+                  className="object-contain drop-shadow-2xl z-10"
+                  priority
+                />
+             </div>
              
-             {/* Elementos flotantes decorativos (opcional, si quieres simular la referencia) */}
+             {/* Elemento flotante */}
              <motion.div 
                animate={{ y: [0, -20, 0] }} 
                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-               className="absolute -top-10 -right-10 w-20 h-20 bg-blue-500 rounded-xl blur-xl opacity-40" 
+               className="absolute -top-5 -right-5 w-16 h-16 bg-blue-500 rounded-full blur-xl opacity-40" 
              />
-             
            </motion.div>
         </div>
 
