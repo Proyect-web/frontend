@@ -4,6 +4,8 @@ import { Inter, Poppins, Rubik,Jost } from "next/font/google"; // Usamos Rubik c
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import { getHomePageData } from "@/lib/strapi";
+import WhatsAppButton from "@/components/ui/WhatsAppButton";
+
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -19,7 +21,7 @@ const jost= Jost({
 
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["400", "500", "700", "800"], 
+  weight: ["200", "500", "700", "800"], 
   variable: "--font-poppins",
 });
 
@@ -33,6 +35,9 @@ const titan = Rubik({
 export const metadata: Metadata = {
   title: "h2go - Innovación en Hidratación",
   description: "Descubre la innovadora botella de agua.",
+  icons:{
+    icon: "/favicon.ico",
+  }  
 };
 
 export default async function RootLayout({
@@ -42,11 +47,17 @@ export default async function RootLayout({
 }>) {
   
   let logoUrl = null;
+  let siteTitle = "GOH2"; // Valor por defecto
   try {
     const homeData = await getHomePageData();
     if (homeData && homeData.navbar_logo) {
       logoUrl = homeData.navbar_logo.url;
     }
+
+    // 2. Obtenemos el título
+      if (homeData.title) {
+        siteTitle = homeData.title;
+      }
   } catch (error) {
     console.error("Error cargando el logo:", error);
   }
@@ -54,10 +65,12 @@ export default async function RootLayout({
   return (
     <html lang="es" className="scroll-smooth">
       <body className={`${inter.variable} ${poppins.variable} ${titan.variable} ${jost.variable} bg-gray-900 text-white antialiased overflow-x-hidden`}>
-        <Sidebar logoUrl={logoUrl} />
+        <Sidebar logoUrl={logoUrl}  siteTitle={siteTitle}/>
         <main className="w-full min-h-screen relative">
             {children}
         </main>
+
+        <WhatsAppButton />
       </body>
     </html>
   );

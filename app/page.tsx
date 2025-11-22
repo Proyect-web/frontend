@@ -8,9 +8,10 @@ import { PageSection } from "@/lib/types";
 // Importamos el componente Hero actualizado
 import { Hero } from "@/components/sections/landing/Hero"; 
 import { Highlights } from "@/components/sections/landing/Highlights"; 
-import { Banner } from "@/components/sections/landing/Banner"; // <--- IMPORTAR
-
-
+import { Banner } from "@/components/sections/landing/Banner"; 
+import { FeaturedProducts } from "@/components/sections/landing/FeaturedProducts"; 
+import { FeaturesCarousel } from "@/components/sections/landing/FeaturesCarousel"; // <--- IMPORTAR
+import { DownloadApp } from "@/components/sections/landing/DownloadApp";
 // Función para generar metadatos SEO dinámicos
 export async function generateMetadata(): Promise<Metadata> {
   try {
@@ -40,6 +41,20 @@ function SectionRenderer(section: PageSection, index: number) {
     case "layout.banner-section":
       return <Banner key={index} data={section} />;
 
+
+    case "layout.featured-products":
+      return <FeaturedProducts key={index} data={section} />;
+
+    
+    // --- NUEVO CASO ---
+    case "layout.carousel-section":
+      return <FeaturesCarousel key={index} data={section} />;
+
+
+
+    case "layout.download-app-section":
+      return <DownloadApp key={index} data={section} />;
+      
     default:
       return null;
   }

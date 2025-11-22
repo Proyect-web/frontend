@@ -15,7 +15,7 @@ export function Hero({ data }: HeroProps) {
   if (!hero_titulo) return null;
 
   return (
-    <section className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pt-16 md:pt-0 md:pl-48 lg:pl-48"> {/* Padding left igual que los otros componentes */}
+    <section id="inicio" className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0a] pt-16 md:pt-0 md:pl-48 lg:pl-48"> {/* Padding left igual que los otros componentes */}
       
       {/* ========== FONDO GLOBAL ========== */}
       <div className="absolute inset-0 z-0">

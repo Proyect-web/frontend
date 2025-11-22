@@ -15,7 +15,7 @@
   --font-jost: var(--font-jost);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  
+  --font-poppins: var(--font-poppins);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -35,15 +35,14 @@ body {
   font-family:  Arial, Helvetica, sans-serif ;
 }
 
-/* .titan-one-regular {
-  font-family: "Titan One", sans-serif;
-  font-weight: 400;
-  font-style: normal;
+
+/* Ocultar scrollbar en Chrome, Safari y Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
 }
 
-
-.titan-one-italic {
-  font-family: "Titan One", sans-serif;
-  font-weight: 400;
-  font-style: italic;
-} */
+/* Ocultar scrollbar en IE, Edge y Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
