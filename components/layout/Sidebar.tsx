@@ -4,6 +4,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useCart } from "@/lib/cart-context";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Home, 
@@ -44,6 +45,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoText, setHideLogoText] = useState(false);
+  const { toggleCart, cartCount } = useCart();
   
   // 2. ESTADO PARA LA SECCIÓN ACTIVA
   const [activeSection, setActiveSection] = useState("inicio");
@@ -117,10 +119,19 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         </Link>
 
         <div className="flex items-center gap-3 sm:gap-4">
-          <button className="relative text-white hover:text-blue-400 transition-colors">
+          <button onClick={toggleCart} className="relative text-white hover:text-blue-400 transition-colors">
             <ShoppingCart size={22} className="sm:hidden" />
             <ShoppingCart size={24} className="hidden sm:block" />
-            <span className="absolute -top-1 -right-1 text-[9px] sm:text-[10px] bg-red-600 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center font-bold">0</span>
+            <AnimatePresence>
+              {cartCount > 0 && (
+                <motion.span 
+                  initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                  className="absolute -top-1 -right-1 text-[9px] sm:text-[10px] bg-red-600 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center font-bold"
+                >
+                  {cartCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
 
           <button 
@@ -155,7 +166,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
             >
               <div className="flex items-center justify-between p-4 sm:p-6 border-b border-white/10">
                 <span className="text-xl sm:text-2xl font-black text-white">Menú</span>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="text-white hover:text-red-400"><X size={28}/></button>
+                <button onClick={() => setIsMobileMenuOpen(false)} className="text-white hover:text-blue-400"><X size={28}/></button>
               </div>
 
               <div className="flex flex-col gap-3 p-4 sm:p-6">
@@ -202,9 +213,18 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
            <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl">
              <span className="hidden lg:inline">Iniciar sesión</span><span className="lg:hidden">Login</span><LogIn size={20} className="hidden md:block lg:hidden"/><LogIn size={22} className="hidden lg:block"/>
            </button>
-           <button className="text-white transition-colors hover:text-blue-400 relative group">
+           <button onClick={toggleCart} className="text-white transition-colors hover:text-blue-400 relative group">
              <ShoppingCart size={32} className="hidden md:block lg:hidden"/><ShoppingCart size={36} className="hidden lg:block"/>
-             <span className="absolute -top-1 -right-1 text-[10px] md:text-xs bg-red-600 rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">0</span>
+             <AnimatePresence>
+               {cartCount > 0 && (
+                 <motion.span 
+                   initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                   className="absolute -top-1 -right-1 text-[10px] md:text-xs bg-red-600 rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center font-bold group-hover:scale-110 transition-transform"
+                 >
+                   {cartCount}
+                 </motion.span>
+               )}
+             </AnimatePresence>
            </button>
         </motion.div>
 

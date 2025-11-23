@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/lib/types";
+import { useCart } from "@/lib/cart-context";
 import { 
   
   ShoppingCart, 
@@ -28,7 +29,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
   // Estado para acordeón de características (opcional, si es muy largo)
   const [showFeatures, setShowFeatures] = useState(false);
-
+  const { addToCart } = useCart();
   const currentImages = 
     product.variants && product.variants.length > 0 
       ? product.variants[selectedVariantIndex].product_images 
@@ -58,11 +59,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
   return (
     <div className="min-h-screen bg-[#050505] text-white pt-24 pb-16 px-6 md:pl-32 md:pr-12">
       <div className="container mx-auto max-w-6xl">
-        
-       
-
         <div className="flex flex-col lg:flex-row gap-10 xl:gap-16">
-          
           {/* ============================================== */}
           {/* COLUMNA IZQUIERDA: GALERÍA COMPACTA */}
           {/* ============================================== */}
@@ -169,7 +166,9 @@ export function ProductDetail({ product }: ProductDetailProps) {
                 <span>Comprar Ahora</span>
              
               </button>
-              <button className="flex-1 border border-neutral-800 h-11 rounded-lg font-medium text-sm hover:border-neutral-600 hover:bg-neutral-900 transition-colors flex items-center justify-center gap-2 text-white">
+              <button 
+                onClick={() => addToCart(product, selectedVariantIndex)}
+                className="flex-1 border border-neutral-800 h-11 rounded-lg font-medium text-sm hover:border-neutral-600 hover:bg-neutral-900 transition-colors flex items-center justify-center gap-2 text-white">
                 <ShoppingCart size={16} />
                 <span>Añadir al carrito</span>
               </button>

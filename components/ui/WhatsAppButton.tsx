@@ -14,7 +14,7 @@ export default function WhatsAppButton() {
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
 
   return (
-    <div className="fixed bottom-8 right-6 z-9999 flex flex-col items-end gap-2">
+    <div className="fixed bottom-8 right-6 z-20 flex flex-col items-end gap-2">
       
       {/* Tooltip opcional (mensaje flotante) */}
       <motion.div 

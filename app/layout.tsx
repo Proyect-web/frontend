@@ -5,7 +5,8 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import { getHomePageData } from "@/lib/strapi";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
-
+import { CartProvider } from "@/lib/cart-context";
+import { CartModal } from "@/components/cart/CartModal";
 
 const inter = Inter({ 
   subsets: ["latin"],
@@ -33,10 +34,10 @@ const titan = Rubik({
 });
 
 export const metadata: Metadata = {
-  title: "h2go - Innovación en Hidratación",
+  title: "H2GO - Innovación en Hidratación",
   description: "Descubre la innovadora botella de agua.",
   icons:{
-    icon: "/favicon.ico",
+    icon: "/logo-transparente.ico",
   }  
 };
 
@@ -65,12 +66,14 @@ export default async function RootLayout({
   return (
     <html lang="es" className="scroll-smooth">
       <body className={`${inter.variable} ${poppins.variable} ${titan.variable} ${jost.variable} bg-gray-900 text-white antialiased overflow-x-hidden`}>
-        <Sidebar logoUrl={logoUrl}  siteTitle={siteTitle}/>
-        <main className="w-full min-h-screen relative">
-            {children}
-        </main>
-
-        <WhatsAppButton />
+        <CartProvider>
+          <Sidebar logoUrl={logoUrl}  siteTitle={siteTitle}/>
+          <main className="w-full min-h-screen relative">
+              {children}
+          </main>
+          <CartModal />
+          <WhatsAppButton />
+        </CartProvider>
       </body>
     </html>
   );
