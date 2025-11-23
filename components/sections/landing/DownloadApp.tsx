@@ -26,8 +26,8 @@ export function DownloadApp({ data }: Props) {
       <div className="container mx-auto px-6 md:pl-32 md:pr-12 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
           
-          {/* --- COLUMNA IZQUIERDA: TEXTO - 3/4 --- */}
-          <div className="lg:w-3/4 w-full max-w-3xl text-left"> {/* Cambiado a 3/4 */}
+          {/* --- COLUMNA IZQUIERDA: TEXTO --- */}
+          <div className="flex-1 max-w-xl text-left">
             
             <motion.h2 
               initial={{ opacity: 0, y: 20 }}
@@ -74,42 +74,42 @@ export function DownloadApp({ data }: Props) {
             )}
           </div>
 
-          {/* --- COLUMNA DERECHA: CELULAR - 1/4 --- */}
+          {/* --- COLUMNA DERECHA: CELULAR --- */}
           <motion.div 
-            className="lg:w-1/4 w-full relative flex justify-center lg:justify-end"
+            className="flex-1 relative flex justify-center lg:justify-end w-full"
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
             {/* Círculo decorativo detrás del celular */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/5 -translate-y-1/2 w-[250px] h-[250px] bg-gradient-to-tr from-green-400/20 to-blue-500/20 rounded-full blur-[40px]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/5 -translate-y-1/2 w-[350px] h-[350px] bg-gradient-to-tr from-green-400/20 to-blue-500/20 rounded-full blur-[40px]" />
 
-            {/* Contenedor del Celular - Más pequeño */}
-            <div className="relative w-[200px] md:w-[220px] aspect-[11/21] bg-black rounded-[2rem] border-[6px] border-[#1a1a1a] shadow-2xl overflow-hidden z-10">
+            {/* Contenedor del Celular - MODIFICADO */}
+            <div className="relative w-[280px] md:w-[300px] aspect-[11/21] bg-black rounded-[3rem] border-[8px] border-[#1a1a1a] shadow-2xl overflow-hidden z-10">
               
               {/* Notch (Decorativo) */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-5 bg-[#1a1a1a] rounded-b-lg z-20" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-6 bg-[#1a1a1a] rounded-b-xl z-20" />
 
-              {/* Contenedor de la Imagen */}
+              {/* Contenedor de la Imagen - MODIFICADO */}
               {app_image && (
-                <div className="relative w-full h-full p-3">
+                <div className="relative w-full h-full p-4"> {/* Padding de 4 (16px) */}
                   <Image
                     src={app_image.url}
                     alt="App Interface"
                     fill
-                    className="object-contain"
+                    className="object-contain" /* Cambiado de object-cover a object-contain */
                     unoptimized={app_image.url.endsWith('.gif')}
                   />
                 </div>
               )}
             </div>
 
-            {/* Elementos flotantes - Más pequeños */}
+            {/* Elementos flotantes */}
             <motion.div 
               animate={{ y: [0, -15, 0] }}
               transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              className="absolute top-20 -right-4 lg:right-2 w-12 h-12 bg-blue-500 rounded-2xl blur-xl opacity-30 z-0"
+              className="absolute top-20 -right-4 lg:right-10 w-16 h-16 bg-blue-500 rounded-2xl blur-xl opacity-30 z-0"
             />
           </motion.div>
 

@@ -42,9 +42,9 @@ export function CheckoutForm() {
           <User className="text-cyan-400" size={20} /> Información de Contacto
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className=" gap-4">
           <div className="space-y-1">
-            <label className="text-xs text-gray-400 ml-1">Nombre</label>
+            <label className="text-xs text-gray-400 ml-1">Nombre Completo</label>
             <input 
               required
               type="text" 
@@ -55,18 +55,7 @@ export function CheckoutForm() {
               placeholder="Ej: Juan"
             />
           </div>
-          <div className="space-y-1">
-            <label className="text-xs text-gray-400 ml-1">Apellido</label>
-            <input 
-              required
-              type="text" 
-              name="lastName"
-              value={formData.lastName}
-              onChange={handleChange}
-              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 transition-all placeholder:text-gray-600"
-              placeholder="Ej: Pérez"
-            />
-          </div>
+         
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
