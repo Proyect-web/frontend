@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { useCart } from "@/lib/cart-context";
@@ -9,6 +11,18 @@ import { motion } from "framer-motion";
 
 export default function CheckoutPage() {
   const { items } = useCart();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get("token");
+    if (tokenFromUrl) {
+      localStorage.setItem("auth_token", tokenFromUrl);
+      // Limpiamos la URL para que no se vea feo
+      router.replace("/checkout");
+    }
+  }, [searchParams, router]);
 
   // Si no hay items, mostramos un estado vacío
   if (items.length === 0) {

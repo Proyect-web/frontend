@@ -6,10 +6,30 @@ import { useCart } from "@/lib/cart-context";
 import { X, Trash2, Plus, Minus, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+
 
 export function CartModal() {
   const { isCartOpen, closeCart, items, removeFromCart, updateQuantity, cartTotal } = useCart();
+  const router = useRouter();
 
+  const handleCheckout = () => {
+    const token = localStorage.getItem("auth_token");
+
+    if (token) {
+      // Si ya tiene token, pasa al checkout
+      closeCart();
+      router.push("/checkout");
+    } else {
+      // SI NO TIENE TOKEN: Redirigir al Dashboard para Login
+      // La URL de retorno es tu página de checkout actual
+      const returnUrl = window.location.origin + "/checkout";
+      
+      // Redirigimos al login del dashboard enviando la url de retorno
+      window.location.href = `https://goh2.vercel.app/login?callbackUrl=${encodeURIComponent(returnUrl)}`;
+    }
+  };
   return (
     <AnimatePresence>
       {isCartOpen && (
@@ -114,13 +134,12 @@ export function CartModal() {
                   <span className="text-gray-400">Subtotal</span>
                   <span className="text-2xl font-bold text-white">S/. {cartTotal.toFixed(2)}</span>
                 </div>
-                <Link 
-                  href="/checkout" // Puedes crear esta página luego
-                  onClick={closeCart}
-                  className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all active:scale-95"
-                >
-                  Continuar
-                </Link>
+               <button 
+        onClick={handleCheckout}
+        className="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(6,182,212,0.4)] transition-all active:scale-95"
+     >
+        Continuar
+     </button>
               </div>
             )}
           </motion.div>
