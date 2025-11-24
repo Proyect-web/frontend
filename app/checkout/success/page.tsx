@@ -1,29 +1,47 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react"; // 1. Importar Suspense
 import { CheckCircle, Home, ShoppingBag } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 
-export default function SuccessPage() {
-  const { items, removeFromCart } = useCart(); // Usamos esto para limpiar
+// 2. Crear componente hijo para el contenido que lee la URL
+function SuccessContent() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
-  const paymentId = searchParams.get("payment_id"); // Viene de Mercado Pago
-  const status = searchParams.get("status");        // Viene de Mercado Pago
+  const paymentId = searchParams.get("payment_id");
+  const status = searchParams.get("status");
 
-  // Limpiar carrito al entrar si el pago fue exitoso
+  // Lógica de limpieza (opcional mover aquí o dejar en el padre si no depende de params)
   useEffect(() => {
     if (status === "approved") {
-      // Borramos todos los items (uno por uno o reseteando el localStorage)
-      // Como tu contexto no tiene 'clearCart', podemos borrar el localStorage directamente
       localStorage.removeItem("h2go_cart");
-      // Opcional: forzar recarga para limpiar estado visual si es necesario
-      // window.location.reload(); 
     }
   }, [status]);
+
+  return (
+    <div className="bg-white/5 rounded-xl p-4 mb-8 text-left space-y-2 border border-white/5">
+      <div className="flex justify-between">
+        <span className="text-sm text-gray-500">Pedido ID:</span>
+        <span className="text-sm text-white font-mono">{orderId || "---"}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-sm text-gray-500">Operación MP:</span>
+        <span className="text-sm text-white font-mono">{paymentId || "---"}</span>
+      </div>
+      <div className="flex justify-between">
+        <span className="text-sm text-gray-500">Estado:</span>
+        <span className="text-sm text-green-400 font-bold uppercase">{status || "Aprobado"}</span>
+      </div>
+    </div>
+  );
+}
+
+export default function SuccessPage() {
+  // useCart se puede usar aquí sin problemas
+  const { } = useCart(); 
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center px-4">
@@ -45,20 +63,10 @@ export default function SuccessPage() {
           Gracias por tu compra. Tu pedido ha sido registrado correctamente y te enviaremos un correo con los detalles.
         </p>
 
-        <div className="bg-white/5 rounded-xl p-4 mb-8 text-left space-y-2 border border-white/5">
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">Pedido ID:</span>
-            <span className="text-sm text-white font-mono">{orderId || "---"}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-sm text-gray-500">Operación MP:</span>
-            <span className="text-sm text-white font-mono">{paymentId || "---"}</span>
-          </div>
-          <div className="flex justify-between">
-             <span className="text-sm text-gray-500">Estado:</span>
-             <span className="text-sm text-green-400 font-bold uppercase">{status || "Aprobado"}</span>
-          </div>
-        </div>
+        {/* 3. Envolver el componente hijo en Suspense */}
+        <Suspense fallback={<div className="text-gray-500 text-sm py-4">Cargando detalles del pedido...</div>}>
+          <SuccessContent />
+        </Suspense>
 
         <div className="flex flex-col gap-3">
           <Link 
