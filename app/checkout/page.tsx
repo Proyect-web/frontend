@@ -6,23 +6,27 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import { OrderSummary } from "@/components/checkout/OrderSummary";
 import { useCart } from "@/lib/cart-context";
+import { useAuth } from "@/lib/auth-context";
 import { ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 // Componente que maneja los searchParams
 function CheckoutContent() {
   const { items } = useCart();
+  const { setAuth } = useAuth();
   const searchParams = useSearchParams();
   const router = useRouter();
 
   useEffect(() => {
     const tokenFromUrl = searchParams.get("token");
     if (tokenFromUrl) {
+      // Guardamos en localStorage Y actualizamos el contexto global
       localStorage.setItem("auth_token", tokenFromUrl);
+      setAuth(tokenFromUrl);
       // Limpiamos la URL para que no se vea feo
       router.replace("/checkout");
     }
-  }, [searchParams, router]);
+  }, [searchParams, router, setAuth]);
 
   // Si no hay items, mostramos un estado vacío
   if (items.length === 0) {
