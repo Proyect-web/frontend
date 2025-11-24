@@ -91,7 +91,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Icono Usuario (Móvil) si está autenticado */}
           {isAuthenticated && (
-            <Link href={DASHBOARD_URL} className="text-white hover:text-blue-400 transition-colors">
+            <Link href={DASHBOARD_URL} target="_blank" className="text-white hover:text-blue-400 transition-colors">
               <User size={22} />
             </Link>
           )}
@@ -159,11 +159,11 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
 
                 {/* Lógica condicional en Menú Móvil */}
                 {isAuthenticated ? (
-                  <Link href={DASHBOARD_URL} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
-                    <User size={20} /> <span className="text-base sm:text-lg">Mi Dashboard</span>
+                  <Link href={DASHBOARD_URL} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
+                    <User size={20} /> <span className="text-base sm:text-lg">Mi Cuenta</span>
                   </Link>
                 ) : (
-                  <Link href={DASHBOARD_URL} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
+                  <Link href={DASHBOARD_URL} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
                     <LogIn size={20} /> <span className="text-base sm:text-lg">Iniciar Sesión</span>
                   </Link>
                 )}
@@ -185,7 +185,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         >
           {/* Lógica condicional en Barra Superior Desktop */}
           {isAuthenticated ? (
-            <Link href={DASHBOARD_URL}>
+            <Link href={DASHBOARD_URL} target="_blank">
               <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl group">
                 <span className="hidden lg:inline">Mi Cuenta</span>
                 <User size={20} className="hidden md:block lg:hidden group-hover:text-cyan-400" />
@@ -193,10 +193,10 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
               </button>
             </Link>
           ) : (
-            <Link href={DASHBOARD_URL}>
+            <Link href={DASHBOARD_URL} target="_blank">
               <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl">
-                <span className="hidden lg:inline">Iniciar sesión</span>
-                <span className="lg:hidden">Login</span>
+                <span className="hidden lg:inline">Iniciar Sesión</span>
+                <span className="lg:hidden">Iniciar Sesión</span>
                 <LogIn size={20} className="hidden md:block lg:hidden" />
                 <LogIn size={22} className="hidden lg:block" />
               </button>
