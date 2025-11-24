@@ -8,39 +8,39 @@ import { useCart } from "@/lib/cart-context";
 export function CheckoutForm() {
   const { items, cartTotal } = useCart();
   const [loading, setLoading] = useState(false);
-
-  // ESTADO LIMPIO
+  
+  // ESTADO LIMPIO (Sin lastName)
   const [formData, setFormData] = useState({
-    firstName: "",
+    firstName: "", // Esto será el nombre completo
     email: "",
     phone: "",
     address: "",
     city: "",
     zip: "",
-    notes: "",
+    notes: ""
   });
 
-  // 🔹 Autocompletar datos del usuario
+  // Autocompletar datos del usuario
   useEffect(() => {
     const fillUserData = async () => {
       const token = localStorage.getItem("auth_token");
       if (!token) return;
 
       try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:3000/api";
-
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:3000/api";
         const res = await fetch(`${apiUrl}/perfil`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          method: "GET",
+          headers: { 
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
         });
-
+        
         if (res.ok) {
           const user = await res.json();
-          setFormData((prev) => ({
+          setFormData(prev => ({
             ...prev,
-            firstName: user.nombre || "",
+            firstName: user.nombre || "", 
             email: user.email || "",
           }));
         }
@@ -52,69 +52,73 @@ export function CheckoutForm() {
     fillUserData();
   }, []);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Procesar pedido y redirigir a Mercado Pago
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
+    
     const token = localStorage.getItem("auth_token");
     if (!token) {
-      alert("Tu sesión no es válida. Inicia sesión nuevamente.");
-      setLoading(false);
-      return;
+        alert("Tu sesión no es válida. Por favor inicia sesión nuevamente.");
+        setLoading(false);
+        return;
     }
 
     try {
-      const apiUrl =
-        process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:3000/api";
+        const apiUrl = process.env.NEXT_PUBLIC_BACKEND_API_URL || "http://localhost:3000/api";
+        
+        const landingUrl = window.location.origin; 
 
-      // URL del sitio actual para que MP retorne aquí
-      const landingUrl = window.location.origin;
-
-      const payload = {
-        shippingData: {
-                ...formData,
-                lastName: "" // Aseguramos que lastName vaya vacío aunque no esté en el form
+        const payload = {
+            shippingData: {
+                // Enviaremos firstName como el nombre completo,
+                // asegurándonos de que coincida con lo que espera el backend
+                firstName: formData.firstName,
+                email: formData.email,
+                phone: formData.phone,
+                address: formData.address,
+                city: formData.city,
+                zip: formData.zip,
+                notes: formData.notes
+                // Ya no enviamos lastName
             },
-        items: items,
-        subtotal: cartTotal,
-        total: cartTotal + (cartTotal > 200 ? 0 : 15),
-        landingUrl: landingUrl, // ⬅ NUEVO
-      };
+            items: items,
+            subtotal: cartTotal, 
+            total: cartTotal + (cartTotal > 200 ? 0 : 15),
+            landingUrl: landingUrl
+        };
 
-      const res = await fetch(`${apiUrl}/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+        const res = await fetch(`${apiUrl}/orders`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (res.ok) {
-        const urlPago = data.sandbox_init_point || data.init_point;
+        if (res.ok) {
+            const urlPago = data.sandbox_init_point || data.init_point;
 
-        if (urlPago) {
-          window.location.href = urlPago;
+            if (urlPago) {
+              window.location.href = urlPago;
+            } else {
+              alert("Error: No se generó el link de pago.");
+              setLoading(false);
+            }
         } else {
-          alert("Error: No se generó el link de pago.");
-          setLoading(false);
+            alert(`Error: ${data.error || "No se pudo procesar el pedido"}`);
+            setLoading(false);
         }
-      } else {
-        alert(`Error: ${data.error || "No se pudo procesar el pedido"}`);
-        setLoading(false);
-      }
+
     } catch (error) {
-      console.error(error);
+        console.error(error);
         alert("Error de conexión con el servidor.");
         setLoading(false);
     }
@@ -122,10 +126,9 @@ export function CheckoutForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      {/* ---------------------------------------------------------------------- */}
-      {/* 🔹 INFORMACIÓN DE CONTACTO */}
-      {/* ---------------------------------------------------------------------- */}
-      <motion.div
+      
+      {/* Sección 1: Información de Contacto */}
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-4"
@@ -133,30 +136,29 @@ export function CheckoutForm() {
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <User className="text-cyan-400" size={20} /> Información de Contacto
         </h2>
-
-        {/* Nombre */}
+        
+        {/* CAMPO ÚNICO PARA NOMBRE COMPLETO */}
         <div className="space-y-1 relative">
-          <label className="text-xs text-gray-400 ml-1">Nombre Completo</label>
-          <User className="absolute top-8 right-4 text-gray-600" size={16} />
-          <input
-            required
-            type="text"
-            name="firstName"
-            value={formData.firstName}
-            onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-gray-600"
-            placeholder="Ej: Juan Pérez"
-          />
+            <label className="text-xs text-gray-400 ml-1">Nombre Completo</label>
+            <User className="absolute top-8 right-4 text-gray-600" size={16} />
+            <input 
+              required
+              type="text" 
+              name="firstName"
+              value={formData.firstName}
+              onChange={handleChange}
+              className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-all placeholder:text-gray-600"
+              placeholder="Ej: Juan Pérez"
+            />
         </div>
 
-        {/* Email - Teléfono */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-1 relative">
             <label className="text-xs text-gray-400 ml-1">Email</label>
             <Mail className="absolute top-8 right-4 text-gray-600" size={16} />
-            <input
+            <input 
               required
-              type="email"
+              type="email" 
               name="email"
               value={formData.email}
               onChange={handleChange}
@@ -167,9 +169,9 @@ export function CheckoutForm() {
           <div className="space-y-1 relative">
             <label className="text-xs text-gray-400 ml-1">Teléfono</label>
             <Phone className="absolute top-8 right-4 text-gray-600" size={16} />
-            <input
+            <input 
               required
-              type="tel"
+              type="tel" 
               name="phone"
               value={formData.phone}
               onChange={handleChange}
@@ -180,28 +182,25 @@ export function CheckoutForm() {
         </div>
       </motion.div>
 
-      {/* ---------------------------------------------------------------------- */}
-      {/* 🔹 DIRECCIÓN DE ENVÍO */}
-      {/* ---------------------------------------------------------------------- */}
-      <motion.div
+      {/* Sección 2: Dirección de Envío */}
+      <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
         className="space-y-4"
       >
         <div className="border-t border-white/10 my-6" />
-
+        
         <h2 className="text-xl font-bold text-white flex items-center gap-2">
           <Truck className="text-cyan-400" size={20} /> Dirección de Envío
         </h2>
 
-        {/* Dirección */}
         <div className="space-y-1 relative">
           <label className="text-xs text-gray-400 ml-1">Dirección y Número</label>
           <MapPin className="absolute top-8 right-4 text-gray-600" size={16} />
-          <input
+          <input 
             required
-            type="text"
+            type="text" 
             name="address"
             value={formData.address}
             onChange={handleChange}
@@ -210,13 +209,12 @@ export function CheckoutForm() {
           />
         </div>
 
-        {/* Ciudad - Zip */}
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
             <label className="text-xs text-gray-400 ml-1">Ciudad / Distrito</label>
-            <input
+            <input 
               required
-              type="text"
+              type="text" 
               name="city"
               value={formData.city}
               onChange={handleChange}
@@ -225,11 +223,9 @@ export function CheckoutForm() {
             />
           </div>
           <div className="space-y-1">
-            <label className="text-xs text-gray-400 ml-1">
-              Código Postal (Opcional)
-            </label>
-            <input
-              type="text"
+            <label className="text-xs text-gray-400 ml-1">Código Postal (Opcional)</label>
+            <input 
+              type="text" 
               name="zip"
               value={formData.zip}
               onChange={handleChange}
@@ -239,12 +235,9 @@ export function CheckoutForm() {
           </div>
         </div>
 
-        {/* Notas */}
         <div className="space-y-1">
-          <label className="text-xs text-gray-400 ml-1">
-            Notas de entrega (Opcional)
-          </label>
-          <textarea
+          <label className="text-xs text-gray-400 ml-1">Notas de entrega (Opcional)</label>
+          <textarea 
             name="notes"
             value={formData.notes}
             onChange={handleChange}
@@ -255,9 +248,7 @@ export function CheckoutForm() {
         </div>
       </motion.div>
 
-      {/* ---------------------------------------------------------------------- */}
-      {/* 🔹 BOTÓN MERCADO PAGO */}
-      {/* ---------------------------------------------------------------------- */}
+      {/* Botón Pagar */}
       <motion.button
         whileHover={{ scale: 1.01 }}
         whileTap={{ scale: 0.98 }}
@@ -274,6 +265,7 @@ export function CheckoutForm() {
           </>
         )}
       </motion.button>
+
     </form>
   );
 }
