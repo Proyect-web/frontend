@@ -1,7 +1,8 @@
 // /lib/strapi.ts
 import qs from "qs";
 import { HomePage } from "./types";
-import { Product } from "./types"; // Asegúrate de importar Product
+import { Product } from "./types"; 
+
 function getStrapiURL() {
   return process.env.NEXT_PUBLIC_STRAPI_API_URL || "http://127.0.0.1:1337";
 }
@@ -10,18 +11,25 @@ function getStrapiToken() {
   return process.env.STRAPI_API_TOKEN || "";
 }
 
-async function fetchStrapiAPI<T>(endpoint: string, query: object = {}): Promise<T> {
+// 1. Añadir parámetro 'options' al fetch
+async function fetchStrapiAPI<T>(endpoint: string, query: object = {}, options: RequestInit = {}): Promise<T> {
   const apiUrl = getStrapiURL();
   const apiToken = getStrapiToken();
   const queryString = qs.stringify(query, { encodeValuesOnly: true });
   
-  const res = await fetch(`${apiUrl}${endpoint}?${queryString}`, {
+  // 2. Usar opciones o fallback inteligente
+  // Si no pasamos 'next' o 'cache', usamos 'no-store' por defecto para mantener tu lógica actual en productos,
+  // PERO permitimos sobreescribirlo.
+  const fetchOptions: RequestInit = {
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiToken}`,
     },
-    cache: "no-store", 
-  });
+    cache: options.next ? undefined : "no-store", // Si hay config 'next', dejamos que ella controle el caché
+    ...options // Sobreescribimos con lo que nos pasen
+  };
+
+  const res = await fetch(`${apiUrl}${endpoint}?${queryString}`, fetchOptions);
 
   if (!res.ok) throw new Error(`Error Strapi: ${res.statusText}`);
   const json = await res.json();
@@ -36,17 +44,16 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       },
     },
     populate: {
-      images: true, // Imágenes generales del producto
+      images: true, 
       variants: {
         populate: {
-          product_images: true // <--- CORRECCIÓN: Usamos el nombre real del campo en Strapi
+          product_images: true 
         }
       }
     },
   };
 
-  // Nota: Como es una colección, Strapi devuelve un array.
-  // Asegúrate de que tu endpoint en Strapi sea '/api/products' (plural)
+  // Mantenemos comportamiento dinámico (o puedes añadir ISR aquí también si quieres)
   const data = await fetchStrapiAPI<Product[]>("/api/products", query);
 
   if (!data || data.length === 0) {
@@ -57,7 +64,6 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 }
 
 export async function getHomePageData(): Promise<HomePage> {
-  // Consulta para el componente "layout.hero-section"
   const query = {
     populate: {
       navbar_logo: true,
@@ -65,81 +71,64 @@ export async function getHomePageData(): Promise<HomePage> {
         on: {
           'layout.hero-section': { 
             populate: {
-              
               hero_imagen: true,
               hero_background: true,
               link: true
             }
           },
-
           'layout.highlights-section': {
             populate: {
               cards: {
                 populate: {
-                  image: true // Traemos la imagen de cada tarjeta
+                  image: true 
                 }
               }
             }
           },
-
-          // --- NUEVA SECCIÓN BANNER ---
           'layout.banner-section': {
             populate: {
               banner_image: true,
               link: true
             }
           },
-
-
-          // --- NUEVA SECCIÓN: PRODUCTOS ---
           'layout.featured-products': {
             populate: {
               products: {
                 populate: {
-                  images: true // Traemos las imágenes de cada producto
+                  images: true 
                 }
               }
             }
           },
-
-
-          // --- NUEVA SECCIÓN: CARRUSEL ---
           'layout.carousel-section': {
             populate: {
               slides: {
                 populate: {
-                  feature_image: true, // Imagen grande
+                  feature_image: true, 
                   card_info: {
                     populate: {
-                      image: true // Icono dentro de la tarjeta
+                      image: true 
                     }
                   }
                 }
               }
             }
           },
-
-
-
-          // --- NUEVA SECCIÓN: DOWNLOAD APP ---
           'layout.download-app-section': {
             populate: {
               app_image: true,
               download_link: true
             }
           },
-          
-
-
-          
         }
       }
     },
   };
 
-  
-
- 
-  return await fetchStrapiAPI<HomePage>("/api/home-page", query);
+  // 3. IMPORTANTE: Usar ISR (Revalidación) para la Home/Layout
+  // Esto permite que se genere estáticamente y se actualice cada 60 segundos
+  // Solucionando el error de "Dynamic server usage" en el build.
+  return await fetchStrapiAPI<HomePage>("/api/home-page", query, {
+    next: { revalidate: 60 } 
+  });
 }
-
