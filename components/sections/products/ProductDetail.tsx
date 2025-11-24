@@ -6,17 +6,18 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
-import { 
-  
-  ShoppingCart, 
-  Check, 
-  ShieldCheck, 
-  Truck, 
-  ArrowRight, 
+import { useRouter } from "next/navigation";
+import {
+
+  ShoppingCart,
+  Check,
+  ShieldCheck,
+  Truck,
+  ArrowRight,
   ChevronDown,
   ChevronUp,
-  
-  
+
+
 } from "lucide-react";
 import { BlocksRenderer, type BlocksContent } from "@strapi/blocks-react-renderer";
 
@@ -30,14 +31,37 @@ export function ProductDetail({ product }: ProductDetailProps) {
   // Estado para acordeón de características (opcional, si es muy largo)
   const [showFeatures, setShowFeatures] = useState(false);
   const { addToCart } = useCart();
-  const currentImages = 
-    product.variants && product.variants.length > 0 
-      ? product.variants[selectedVariantIndex].product_images 
+  const router = useRouter();
+
+  const currentImages =
+    product.variants && product.variants.length > 0
+      ? product.variants[selectedVariantIndex].product_images
       : product.images;
 
   useEffect(() => {
     setSelectedImageIndex(0);
   }, [selectedVariantIndex]);
+
+  // Función para manejar la compra directa
+  const handleBuyNow = () => {
+    const token = localStorage.getItem("auth_token");
+
+    if (token) {
+      // Si ya tiene token, añade el producto al carrito y va directo al checkout
+      addToCart(product, selectedVariantIndex);
+      router.push("/checkout");
+    } else {
+      // Si NO tiene token: Redirigir al Dashboard para Login
+      // La URL de retorno es la página de checkout
+      const returnUrl = window.location.origin + "/checkout";
+
+      // Antes de redirigir, añadimos el producto al carrito para que esté listo cuando vuelva
+      addToCart(product, selectedVariantIndex);
+
+      // Redirigimos al login del dashboard enviando la url de retorno
+      window.location.href = `https://goh2.vercel.app/login?callbackUrl=${encodeURIComponent(returnUrl)}`;
+    }
+  };
 
   const renderContent = (content: any, className = "") => {
     if (!content) return null;
@@ -96,8 +120,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                     onClick={() => setSelectedImageIndex(idx)}
                     className={`
                       relative w-14 h-14 flex-shrink-0 bg-[#0a0a0a] rounded-lg overflow-hidden border transition-all
-                      ${selectedImageIndex === idx 
-                        ? "border-white opacity-100" 
+                      ${selectedImageIndex === idx
+                        ? "border-white opacity-100"
                         : "border-transparent opacity-50 hover:opacity-100 hover:border-white/20"
                       }
                     `}
@@ -113,7 +137,7 @@ export function ProductDetail({ product }: ProductDetailProps) {
           {/* COLUMNA DERECHA: INFO (LIMPIA Y COMPACTA) */}
           {/* ============================================== */}
           <div className="w-full lg:w-[45%] flex flex-col pt-2">
-            
+
             {/* 1. Título y Precio Integrados */}
             <h1 className="text-2xl md:text-3xl font-bold mb-2 leading-tight font-sans">
               {product.name}
@@ -147,8 +171,8 @@ export function ProductDetail({ product }: ProductDetailProps) {
                       onClick={() => setSelectedVariantIndex(index)}
                       className={`
                         w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200
-                        ${selectedVariantIndex === index 
-                          ? "ring-1 ring-offset-2 ring-offset-[#050505] ring-white scale-100" 
+                        ${selectedVariantIndex === index
+                          ? "ring-1 ring-offset-2 ring-offset-[#050505] ring-white scale-100"
                           : "hover:scale-110 opacity-70 hover:opacity-100"
                         }
                       `}
@@ -162,11 +186,13 @@ export function ProductDetail({ product }: ProductDetailProps) {
 
             {/* 4. Botones Compactos */}
             <div className="flex gap-3 mb-8">
-              <button className="flex-1 bg-white text-black h-11 rounded-lg font-bold text-sm hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2">
+              <button
+                onClick={handleBuyNow}
+                className="flex-1 bg-white text-black h-11 rounded-lg font-bold text-sm hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2"
+              >
                 <span>Comprar Ahora</span>
-             
               </button>
-              <button 
+              <button
                 onClick={() => addToCart(product, selectedVariantIndex)}
                 className="flex-1 border border-neutral-800 h-11 rounded-lg font-medium text-sm hover:border-neutral-600 hover:bg-neutral-900 transition-colors flex items-center justify-center gap-2 text-white">
                 <ShoppingCart size={16} />
@@ -177,14 +203,14 @@ export function ProductDetail({ product }: ProductDetailProps) {
             {/* 5. Características (Acordeón Minimalista) */}
             {product.features && (
               <div className="border-t border-neutral-900 pt-4">
-                <button 
+                <button
                   onClick={() => setShowFeatures(!showFeatures)}
                   className="flex items-center justify-between w-full py-2 text-left group"
                 >
                   <span className="text-xs font-bold text-white uppercase tracking-wider ">Características Técnicas</span>
-                  {showFeatures ? <ChevronUp  size={14} className="text-neutral-500"/> : <ChevronDown size={14} className="text-neutral-500"/>}
+                  {showFeatures ? <ChevronUp size={14} className="text-neutral-500" /> : <ChevronDown size={14} className="text-neutral-500" />}
                 </button>
-                
+
                 <AnimatePresence>
                   {showFeatures && (
                     <motion.div
