@@ -10,7 +10,6 @@ import {
   Gift,
   HandCoins,
   ShoppingBag,
-  Heart,
   LogIn,
   ShoppingCart,
   TabletSmartphone,
@@ -28,12 +27,13 @@ interface SidebarProps {
   siteTitle?: string | null;
 }
 
+// 1. Eliminamos la propiedad 'active: true' hardcodeada
 const menuItems = [
-  { icon: Home, label: "Inicio", href: "/", active: true },
-  { icon: Ticket, label: "Caracteristicas", href: "/#caracteristicas" },
+  { icon: Home, label: "Inicio", href: "/" }, // ID esperado: "inicio"
+  { icon: Ticket, label: "Características", href: "/#caracteristicas" }, // ID esperado: "caracteristicas"
   { icon: HandCoins, label: "Ofertas", href: "/#ofertas" },
   { icon: ShoppingBag, label: "Tienda", href: "/#tienda" },
-  { icon: Gift, label: "Especificaciones", href: "/#especificaciones" },
+  { icon: Gift, label: "Especificaciones", href: "/#especificaciones" }, // Asegúrate de que exista <section id="especificaciones">
   { icon: TabletSmartphone, label: "App Movil", href: "/#app" },
 ];
 
@@ -41,16 +41,15 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [hideLogoText, setHideLogoText] = useState(false);
+  
+  // 2. Nuevo estado para rastrear la sección activa
+  const [activeSection, setActiveSection] = useState("inicio");
 
-  // Usar el contexto de autenticación global
   const { isAuthenticated, token } = useAuth();
   const { cartCount, toggleCart } = useCart();
   const { openChat } = useChatContext();
 
-  // URL del Dashboard
   const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://goh2.vercel.app/dashboard";
-
-  // Construir URL con token si existe para sincronización
   const dashboardLink = isAuthenticated && token
     ? `${DASHBOARD_URL}?token=${token}`
     : DASHBOARD_URL;
@@ -58,6 +57,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
   const displayTitle = siteTitle || "GOH2";
   const displayInitials = displayTitle.length > 2 ? displayTitle.substring(0, 2).toUpperCase() : displayTitle;
 
+  // Efecto para ocultar texto del logo al hacer scroll
   useEffect(() => {
     const onScroll = () => setHideLogoText(window.scrollY > 50);
     window.addEventListener("scroll", onScroll);
@@ -70,6 +70,37 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // 3. Lógica del Intersection Observer para detectar scroll
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.5, // Se activa cuando el 50% de la sección es visible
+    };
+
+    const observerCallback = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id);
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, observerOptions);
+
+    // Observar todas las secciones definidas en el menú
+    menuItems.forEach((item) => {
+      // Convertimos el href en un ID (ej: "/#ofertas" -> "ofertas", "/" -> "inicio")
+      const sectionId = item.href === "/" ? "inicio" : item.href.replace("/#", "");
+      const element = document.getElementById(sectionId);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -94,7 +125,6 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         </Link>
 
         <div className="flex items-center gap-3 sm:gap-4">
-          {/* Icono Usuario (Móvil) si está autenticado */}
           {isAuthenticated && (
             <Link href={dashboardLink} target="_blank" className="text-white hover:text-blue-400 transition-colors">
               <User size={22} />
@@ -125,7 +155,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         </div>
       </motion.div>
 
-      {/* MENÚ MÓVIL DESPLEGABLE (OVERLAY) */}
+      {/* MENÚ MÓVIL DESPLEGABLE */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <>
@@ -173,7 +203,6 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
                   <Bot size={24} /> <span className="text-base sm:text-lg">Chat Bot</span>
                 </button>
 
-                {/* Lógica condicional en Menú Móvil */}
                 {isAuthenticated ? (
                   <Link href={dashboardLink} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
                     <User size={20} /> <span className="text-base sm:text-lg">Mi Cuenta</span>
@@ -192,14 +221,13 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
       {/* SIDEBAR ESCRITORIO (>= md) */}
       <div className="hidden md:block">
 
-        {/* TOP BAR Desktop: Login/Usuario + Carrito */}
+        {/* TOP BAR Desktop */}
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5 }}
           className="fixed top-4 mt-4 md:top-6 right-4 md:right-12 z-50 flex items-center gap-3 md:gap-4"
         >
-          {/* Lógica condicional en Barra Superior Desktop */}
           {isAuthenticated ? (
             <Link href={dashboardLink} target="_blank">
               <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl group">
@@ -232,10 +260,9 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
           </button>
         </motion.div>
 
-        {/* LOGO + MENÚ PRINCIPAL (PÍLDORA FLOTANTE) */}
+        {/* LOGO + MENÚ PRINCIPAL */}
         <div className="fixed top-8 md:top-12 left-3 md:left-4 lg:left-6 z-50 flex flex-col gap-4 md:gap-5 lg:gap-6 items-start">
 
-          {/* Logo */}
           <motion.div initial={{ x: -50, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 0.5, delay: 0.2 }}>
             <Link href="/" className="flex items-center gap-2 md:gap-3 lg:gap-4 pl-1 md:pl-2 mb-2 group">
               {logoUrl ? (
@@ -268,18 +295,29 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
             style={{ minHeight: "420px", padding: "8px" }}
           >
             <div className="flex flex-col gap-1.5 md:gap-2">
-              {menuItems.map((item, index) => (
-                <Link key={index} href={item.href} className={`relative flex items-center h-11 md:h-12 lg:h-13 px-2.5 md:px-3 lg:px-3.5 rounded-[1.25rem] md:rounded-[1.5rem] transition-all duration-300 group ${item.active ? "bg-[#0097B2] text-black font-bold shadow-[0_0_18px_rgba(0,151,178,0.5)]" : "text-gray-100 hover:text-white hover:bg-white/8"}`}>
-                  <div className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 shrink-0">
-                    <item.icon size={22} className="md:hidden" strokeWidth={item.active ? 2.5 : 2} />
-                    <item.icon size={24} className="hidden md:block lg:hidden" strokeWidth={item.active ? 2.5 : 2} />
-                    <item.icon size={26} className="hidden lg:block" strokeWidth={item.active ? 2.5 : 2} />
-                  </div>
-                  <AnimatePresence mode="wait">
-                    {isHovered && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }} className="ml-2.5 md:ml-3 text-xs md:text-sm lg:text-[15px] font-semibold whitespace-nowrap overflow-hidden">{item.label}</motion.span>}
-                  </AnimatePresence>
-                </Link>
-              ))}
+              {menuItems.map((item, index) => {
+                // 4. Cálculo dinámico de si está activo
+                const sectionId = item.href === "/" ? "inicio" : item.href.replace("/#", "");
+                const isActive = activeSection === sectionId;
+
+                return (
+                  <Link 
+                    key={index} 
+                    href={item.href} 
+                    className={`relative flex items-center h-11 md:h-12 lg:h-13 px-2.5 md:px-3 lg:px-3.5 rounded-[1.25rem] md:rounded-[1.5rem] transition-all duration-300 group 
+                    ${isActive ? "bg-[#0097B2] text-black font-bold shadow-[0_0_18px_rgba(0,151,178,0.5)]" : "text-gray-100 hover:text-white hover:bg-white/8"}`}
+                  >
+                    <div className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 shrink-0">
+                      <item.icon size={22} className="md:hidden" strokeWidth={isActive ? 2.5 : 2} />
+                      <item.icon size={24} className="hidden md:block lg:hidden" strokeWidth={isActive ? 2.5 : 2} />
+                      <item.icon size={26} className="hidden lg:block" strokeWidth={isActive ? 2.5 : 2} />
+                    </div>
+                    <AnimatePresence mode="wait">
+                      {isHovered && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.2 }} className="ml-2.5 md:ml-3 text-xs md:text-sm lg:text-[15px] font-semibold whitespace-nowrap overflow-hidden">{item.label}</motion.span>}
+                    </AnimatePresence>
+                  </Link>
+                );
+              })}
             </div>
 
             <div className="mt-5 md:mt-6 mb-2 px-2.5 md:px-3">
@@ -290,7 +328,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
 
             <div className="flex flex-col gap-1.5 md:gap-2">
               <button 
-                 onClick={openChat} // <--- AQUI LA MAGIA
+                 onClick={openChat}
                  className="relative flex items-center h-11 md:h-12 lg:h-13 px-2.5 md:px-3 lg:px-3.5 rounded-[1.25rem] md:rounded-[1.5rem] text-gray-100 hover:text-white hover:bg-white/8 transition-all duration-300 group w-full text-left"
                >
                   <div className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 shrink-0">
