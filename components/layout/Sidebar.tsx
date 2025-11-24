@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
+import { useChatContext } from "@/lib/chat-context";
 
 interface SidebarProps {
   logoUrl?: string | null;
@@ -36,10 +37,6 @@ const menuItems = [
   { icon: TabletSmartphone, label: "App Movil", href: "/#app" },
 ];
 
-const extraItems = [
-  { icon: Bot, label: "Chat Bot", href: "/#chatbot" },
-];
-
 export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,6 +45,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
   // Usar el contexto de autenticación global
   const { isAuthenticated, token } = useAuth();
   const { cartCount, toggleCart } = useCart();
+  const { openChat } = useChatContext();
 
   // URL del Dashboard
   const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://goh2.vercel.app/dashboard";
@@ -165,11 +163,15 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
 
                 <div className="h-px bg-white/10 my-2" />
 
-                {extraItems.map((item, index) => (
-                  <Link key={index} href={item.href} onClick={() => setIsMobileMenuOpen(false)} className="flex items-center gap-4 p-3.5 sm:p-4 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-medium transition-colors">
-                    <item.icon size={24} /> <span className="text-base sm:text-lg">{item.label}</span>
-                  </Link>
-                ))}
+                <button 
+                  onClick={() => {
+                    openChat();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="flex items-center gap-4 p-3.5 sm:p-4 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 font-medium transition-colors w-full text-left"
+                >
+                  <Bot size={24} /> <span className="text-base sm:text-lg">Chat Bot</span>
+                </button>
 
                 {/* Lógica condicional en Menú Móvil */}
                 {isAuthenticated ? (
@@ -287,16 +289,28 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
             </div>
 
             <div className="flex flex-col gap-1.5 md:gap-2">
-              {extraItems.map((item, index) => (
-                <Link key={index} href={item.href} className="relative flex items-center h-11 md:h-12 lg:h-13 px-2.5 md:px-3 lg:px-3.5 rounded-[1.25rem] md:rounded-[1.5rem] text-gray-100 hover:text-white hover:bg-white/8 transition-all duration-300 group">
+              <button 
+                 onClick={openChat} // <--- AQUI LA MAGIA
+                 className="relative flex items-center h-11 md:h-12 lg:h-13 px-2.5 md:px-3 lg:px-3.5 rounded-[1.25rem] md:rounded-[1.5rem] text-gray-100 hover:text-white hover:bg-white/8 transition-all duration-300 group w-full text-left"
+               >
                   <div className="flex items-center justify-center w-7 h-7 md:w-8 md:h-8 shrink-0">
-                    <item.icon size={22} className="md:hidden" strokeWidth={2} /><item.icon size={24} className="hidden md:block lg:hidden" strokeWidth={2} /><item.icon size={26} className="hidden lg:block" strokeWidth={2} />
+                    <Bot size={22} className="md:hidden" strokeWidth={2} />
+                    <Bot size={24} className="hidden md:block lg:hidden" strokeWidth={2} />
+                    <Bot size={26} className="hidden lg:block" strokeWidth={2} />
                   </div>
                   <AnimatePresence>
-                    {isHovered && <motion.span initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="ml-2.5 md:ml-3 text-xs md:text-sm lg:text-[15px] font-semibold whitespace-nowrap">{item.label}</motion.span>}
+                    {isHovered && (
+                      <motion.span 
+                        initial={{ opacity: 0, x: -10 }} 
+                        animate={{ opacity: 1, x: 0 }} 
+                        exit={{ opacity: 0, x: -10 }} 
+                        className="ml-2.5 md:ml-3 text-xs md:text-sm lg:text-[15px] font-semibold whitespace-nowrap"
+                      >
+                        Chat Bot
+                      </motion.span>
+                    )}
                   </AnimatePresence>
-                </Link>
-              ))}
+               </button>
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-28 md:h-32 bg-gradient-to-t from-blue-900/20 to-transparent pointer-events-none rounded-b-[2rem] md:rounded-b-[2.5rem] lg:rounded-b-[3rem]" />
           </motion.nav>

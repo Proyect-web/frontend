@@ -23,7 +23,7 @@ export function DownloadApp({ data }: Props) {
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-cyan-500/5 blur-[100px] rounded-full pointer-events-none" />
 
-      <div className="container mx-auto px-6 md:pl-32 md:pr-12 relative z-10">
+      <div className="container mx-auto px-6 md:pl-44 md:pr-30 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-16 lg:gap-24">
           
           {/* --- COLUMNA IZQUIERDA: TEXTO --- */}

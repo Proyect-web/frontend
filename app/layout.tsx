@@ -6,7 +6,9 @@ import Sidebar from "@/components/layout/Sidebar";
 import Footer from "@/components/layout/Footer";
 import { getHomePageData } from "@/lib/strapi";
 import WhatsAppButton from "@/components/ui/WhatsAppButton";
+import Chatbot from "@/components/ui/Chatbot";
 import { CartProvider } from "@/lib/cart-context";
+import { ChatProvider } from "@/lib/chat-context";
 import { CartModal } from "@/components/cart/CartModal";
 import { AuthProvider } from "@/lib/auth-context";
 
@@ -70,19 +72,20 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} ${poppins.variable} ${titan.variable} ${jost.variable} bg-gray-900 text-white antialiased overflow-x-hidden`}
       >
-
         <AuthProvider>
+          <ChatProvider>
           <CartProvider>
-            <Sidebar logoUrl={logoUrl} siteTitle={siteTitle} />
+            <Sidebar logoUrl={logoUrl}  siteTitle={siteTitle}/>
             <main className="w-full min-h-screen relative">
-              {children}
+                {children}
             </main>
-
+            <Footer />
+            <Chatbot />
             <CartModal />
             <WhatsAppButton />
           </CartProvider>
+        </ChatProvider>
         </AuthProvider>
-
       </body>
     </html>
   );
