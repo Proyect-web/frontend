@@ -20,6 +20,7 @@ import {
   User
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import { useCart } from "@/lib/cart-context";
 
 interface SidebarProps {
   logoUrl?: string | null;
@@ -46,6 +47,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
 
   // Usar el contexto de autenticación global
   const { isAuthenticated, token } = useAuth();
+  const { cartCount, toggleCart } = useCart();
 
   // URL del Dashboard
   const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://goh2.vercel.app/dashboard";
@@ -101,10 +103,17 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
             </Link>
           )}
 
-          <button className="relative text-white hover:text-blue-400 transition-colors">
+          <button
+            onClick={toggleCart}
+            className="relative text-white hover:text-blue-400 transition-colors"
+          >
             <ShoppingCart size={22} className="sm:hidden" />
             <ShoppingCart size={24} className="hidden sm:block" />
-            <span className="absolute -top-1 -right-1 text-[9px] sm:text-[10px] bg-red-600 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center font-bold">0</span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 text-[9px] sm:text-[10px] bg-red-600 rounded-full w-3.5 h-3.5 sm:w-4 sm:h-4 flex items-center justify-center font-bold">
+                {cartCount}
+              </span>
+            )}
           </button>
 
           <button
@@ -208,9 +217,16 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
             </Link>
           )}
 
-          <button className="text-white transition-colors hover:text-blue-400 relative group">
+          <button
+            onClick={toggleCart}
+            className="text-white transition-colors hover:text-blue-400 relative group"
+          >
             <ShoppingCart size={32} className="hidden md:block lg:hidden" /><ShoppingCart size={36} className="hidden lg:block" />
-            <span className="absolute -top-1 -right-1 text-[10px] md:text-xs bg-red-600 rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">0</span>
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 text-[10px] md:text-xs bg-red-600 rounded-full w-4 h-4 md:w-5 md:h-5 flex items-center justify-center font-bold group-hover:scale-110 transition-transform">
+                {cartCount}
+              </span>
+            )}
           </button>
         </motion.div>
 
