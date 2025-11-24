@@ -45,13 +45,22 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
   const [hideLogoText, setHideLogoText] = useState(false);
 
   // Usar el contexto de autenticación global
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, token } = useAuth();
 
   // URL del Dashboard
-  const DASHBOARD_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://goh2.vercel.app/dashboard";
+  const DASHBOARD_BASE_URL = process.env.NEXT_PUBLIC_DASHBOARD_URL || "https://goh2.vercel.app/dashboard";
 
   const displayTitle = siteTitle || "GOH2";
   const displayInitials = displayTitle.length > 2 ? displayTitle.substring(0, 2).toUpperCase() : displayTitle;
+
+  // Función para construir la URL del dashboard con el token si está autenticado
+  const getDashboardUrl = () => {
+    if (isAuthenticated && token) {
+      // Si está autenticado, pasar el token al dashboard
+      return `${DASHBOARD_BASE_URL}?token=${encodeURIComponent(token)}`;
+    }
+    return DASHBOARD_BASE_URL;
+  };
 
   useEffect(() => {
     const onScroll = () => setHideLogoText(window.scrollY > 50);
@@ -66,6 +75,8 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  const dashboardUrl = getDashboardUrl();
 
   return (
     <>
@@ -91,7 +102,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         <div className="flex items-center gap-3 sm:gap-4">
           {/* Icono Usuario (Móvil) si está autenticado */}
           {isAuthenticated && (
-            <Link href={DASHBOARD_URL} target="_blank" className="text-white hover:text-blue-400 transition-colors">
+            <Link href={dashboardUrl} target="_blank" className="text-white hover:text-blue-400 transition-colors">
               <User size={22} />
             </Link>
           )}
@@ -159,11 +170,11 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
 
                 {/* Lógica condicional en Menú Móvil */}
                 {isAuthenticated ? (
-                  <Link href={DASHBOARD_URL} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
+                  <Link href={dashboardUrl} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
                     <User size={20} /> <span className="text-base sm:text-lg">Mi Cuenta</span>
                   </Link>
                 ) : (
-                  <Link href={DASHBOARD_URL} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
+                  <Link href={dashboardUrl} target="_blank" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center justify-center gap-2 mt-4 p-3.5 sm:p-4 bg-[#0097B2] text-black font-bold rounded-xl hover:bg-[#0097B2]/90 transition-colors">
                     <LogIn size={20} /> <span className="text-base sm:text-lg">Iniciar Sesión</span>
                   </Link>
                 )}
@@ -185,7 +196,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
         >
           {/* Lógica condicional en Barra Superior Desktop */}
           {isAuthenticated ? (
-            <Link href={DASHBOARD_URL} target="_blank">
+            <Link href={dashboardUrl} target="_blank">
               <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl group">
                 <span className="hidden lg:inline">Mi Cuenta</span>
                 <User size={20} className="hidden md:block lg:hidden group-hover:text-cyan-400" />
@@ -193,7 +204,7 @@ export default function Sidebar({ logoUrl, siteTitle }: SidebarProps) {
               </button>
             </Link>
           ) : (
-            <Link href={DASHBOARD_URL} target="_blank">
+            <Link href={dashboardUrl} target="_blank">
               <button className="hidden md:flex items-center gap-2 lg:gap-3 px-4 py-2 md:px-6 md:py-2.5 lg:px-5 lg:py-2 bg-black hover:bg-gray-800 text-white rounded-full text-sm md:text-xs lg:text-sm font-bold transition-all border border-white/10 shadow-lg hover:shadow-xl">
                 <span className="hidden lg:inline">Iniciar Sesión</span>
                 <span className="lg:hidden">Iniciar Sesión</span>
